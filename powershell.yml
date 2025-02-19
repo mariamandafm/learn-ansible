@@ -1,0 +1,30 @@
+---
+- hosts: group1
+  become: yes
+  name: Install PowerShell on Ubuntu
+  tasks:
+    - name: Update all packages to their latest versions
+      apt:
+        update_cache: yes 
+        upgrade: yes 
+    - name: Install required software
+      apt:
+        name:
+          - apt-transport-https
+          - software-properties-common
+        state: present
+    - name: Get latest PowerShell release versions
+      uri:
+        url: https://api.github.com/repos/PowerShell/PowerShell/releases/latest
+        method: GET
+        return_content: yes
+        status_code: 200
+      register: release_json
+    - name: Download Powershell .deb package
+      get_url:
+        url: "{{ release_json.json.assets | selectattr('name', 'contains', '.deb') | map(attribute='browser_download_url') | list | first }}"
+        dest: "/tmp/powershell.deb"
+    - name: Install PowerShell
+      apt:
+        deb: "/tmp/powershell.deb"
+        state: present
