@@ -1,0 +1,13 @@
+---
+- hosts: ubuntu-server # Alias for group1
+  become: yes
+  vars:
+    username: milo
+    password: "{{ 'Pa$$w0rd' | password_hash('sha512') }}" # Hashed password 
+  tasks:
+    - name: Ensure user {{ username }} exists
+      user: # Create user
+        name: "{{ username }}"
+        password: "{{ password }}"
+        update_password: on_create # Update password only if user is created
+...
