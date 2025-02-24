@@ -1,0 +1,7 @@
+---
+# handlers file for webserver
+# actions triggered by task changes
+- name: Restart Nginx
+  service:
+    name: nginx
+    state: restarted
